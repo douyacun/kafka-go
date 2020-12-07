@@ -18,19 +18,11 @@ func main() {
 		log.Fatalf("new kafka client err: %s", err.Error())
 	}
 	defer client.Close()
-	topics, err := client.Topics()
-	if err != nil {
-		log.Fatalf("kafka topics --list err: %s", err.Error())
-	}
-
-	for _, v := range topics {
-		fmt.Printf("%s\n", v)
-	}
 	c, err := sarama.NewConsumerFromClient(client)
 	if err != nil {
 		log.Fatalf("new consumer err: %s", err.Error())
 	}
-	topic := topics[0]
+	topic := "my_test"
 	wg := sync.WaitGroup{}
 	messages := make(chan *sarama.ConsumerMessage, 10)
 	closing := make(chan struct{})
@@ -64,6 +56,7 @@ func main() {
 
 	go func() {
 		for msg := range messages {
+
 			fmt.Printf("Partition:\t%d\n", msg.Partition)
 			fmt.Printf("Offset:\t%d\n", msg.Offset)
 			fmt.Printf("Key:\t%s\n", string(msg.Key))
